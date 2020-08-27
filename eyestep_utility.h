@@ -41,7 +41,8 @@ namespace EyeStep
 
 	namespace util
 	{
-		extern DWORD setMemoryPage(uint32_t address, DWORD protect, size_t size = 0x3FF);
+		extern DWORD setPageProtect(uint32_t address, DWORD protect, size_t size = 0x3FF);
+		extern DWORD getPageProtect(uint32_t address);
 
 		extern void writeByte(uint32_t address, uint8_t value);
 		extern void writeBytes(uint32_t address, void* value, size_t count);
