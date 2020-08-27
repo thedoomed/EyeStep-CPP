@@ -18,7 +18,7 @@ namespace EyeStep
 		auto savedRoutines = std::vector<uint32_t>();
 		DWORD useless;
 
-		DWORD setMemoryPage(uint32_t address, DWORD protect, size_t size)
+		DWORD setPageProtect(uint32_t address, DWORD protect, size_t size)
 		{
 			DWORD old_protect;
 			if (external_mode)
@@ -29,6 +29,19 @@ namespace EyeStep
 				VirtualProtect(reinterpret_cast<void*>(address), size, protect, &old_protect);
 			}
 			return old_protect;
+		}
+
+		DWORD getPageProtect(uint32_t address)
+		{
+			MEMORY_BASIC_INFORMATION mbi = { 0 };
+			if (external_mode)
+			{
+				VirtualQueryEx(current_proc, reinterpret_cast<void*>(address), &mbi, sizeof(mbi));
+			}
+			else {
+				VirtualQuery(reinterpret_cast<void*>(address), &mbi, sizeof(mbi));
+			}
+			return mbi.Protect;
 		}
 
 
@@ -206,7 +219,7 @@ namespace EyeStep
 				hook_size += EyeStep::read(from + hook_size).len;
 			}
 
-			DWORD old_protect = setMemoryPage(from, PAGE_EXECUTE_READWRITE);
+			DWORD old_protect = setPageProtect(from, PAGE_EXECUTE_READWRITE);
 
 			writeByte(from, 0xE9);
 			writeInt(from + 1, (to - from) - 5);
@@ -216,7 +229,7 @@ namespace EyeStep
 				writeByte(from + i, 0x90);
 			}
 
-			setMemoryPage(from, old_protect);
+			setPageProtect(from, old_protect);
 		}
 
 		void placeCall(uint32_t from, uint32_t to)
@@ -227,7 +240,7 @@ namespace EyeStep
 				hook_size += EyeStep::read(from + hook_size).len;
 			}
 
-			DWORD old_protect = setMemoryPage(from, PAGE_EXECUTE_READWRITE);
+			DWORD old_protect = setPageProtect(from, PAGE_EXECUTE_READWRITE);
 
 			writeByte(from, 0xE8);
 			writeInt(from + 1, (to - from) - 5);
@@ -237,7 +250,7 @@ namespace EyeStep
 				writeByte(from + i, 0x90);
 			}
 
-			setMemoryPage(from, old_protect);
+			setPageProtect(from, old_protect);
 		}
 
 		void placeTrampoline(uint32_t from, uint32_t to, size_t length)
@@ -558,18 +571,8 @@ namespace EyeStep
 
 			while (at < func_end)
 			{
-				if ((
-					readByte(at) == 0xE8
-					|| readByte(at) == 0xE9
-					)
-					&&
-					isPrologue(getRel(at))
-					) {
-					calls.push_back(getRel(at));
-					at += 5;
-					continue;
-				}
-				at++;
+				calls.push_back(nextCall(at));
+				at += nextCall(at, true) + 5;
 			}
 
 			return calls;
@@ -880,7 +883,7 @@ namespace EyeStep
 
 		void disableFunction(uint32_t func)
 		{
-			DWORD old_protect = setMemoryPage(func, PAGE_EXECUTE_READWRITE);
+			DWORD old_protect = setPageProtect(func, PAGE_EXECUTE_READWRITE);
 			if (isPrologue(func))
 			{
 				uint16_t ret = getRetn(func);
@@ -897,7 +900,7 @@ namespace EyeStep
 			else {
 				writeByte(func, 0xC3);
 			}
-			setMemoryPage(func, old_protect);
+			setPageProtect(func, old_protect);
 		}
 
 		std::vector<uint32_t> debug_r32(uint32_t address, uint8_t r32, uint32_t offset, size_t count)
@@ -1005,9 +1008,9 @@ namespace EyeStep
 			}
 
 			// Restore protection
-			DWORD old_protect = setMemoryPage(address, PAGE_EXECUTE_READWRITE);
+			DWORD old_protect = setPageProtect(address, PAGE_EXECUTE_READWRITE);
 			writeBytes(address, old_bytes, hook_size);
-			setMemoryPage(address, old_protect);
+			setPageProtect(address, old_protect);
 
 			delete[] old_bytes;
 
