@@ -572,7 +572,7 @@ namespace EyeStep
 			while (at < func_end)
 			{
 				calls.push_back(nextCall(at));
-				at += nextCall(at, true) + 5;
+				at = nextCall(at, true) + 5;
 			}
 
 			return calls;
