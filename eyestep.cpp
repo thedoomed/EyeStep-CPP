@@ -1847,13 +1847,11 @@ namespace EyeStep
 								get_sib(0); // Translate SIB byte (no offsets)
 								break;
 							case 5:
-								/*
 								char s_disp[16];
 								sprintf(s_disp, "%08X", p.operands[c].disp32 = *reinterpret_cast<uint32_t*>(at + 1));
 								strcat(p.data, s_disp);
+								p.operands[c].flags |= OP_DISP32;
 								at += sizeof(uint32_t);
-								*/
-								get_imm32(at, true);
 								break;
 							default:
 								strcat(p.data, mnemonics::r32_names[p.operands[c].append_reg(r)]);
