@@ -16,13 +16,30 @@ in the future.
 # Usage
 
 To use EyeStep you simply include eyestep.h where needed
-use EyeStep::ReadInstruction(address) to interpret the approximate
+use EyeStep::read(address) to interpret the approximate
 x86 instruction at 'address'.
 You can view the disassembly like so:
 
 EyeStep::open(GetCurrentProcess()); // essential for more accurate disassembly output
 auto instr = EyeStep::read(0x12000000); // returns an 'EyeStep::inst' object
 std::cout << instr.data << std::endl; // displays the processed instruction (string)
+
+You can view a range of instructions like so:
+uint32_t from = 0x12000000;
+uint32_t to = from + 100; // disassemble instructions from point A to point B
+for (EyeStep::inst instr : EyeStep::read_range(from, to))
+{
+    std::cout << instr.data << std::endl;
+}
+
+Or a set amount of instructions:
+uint32_t from = 0x12000000;
+size_t number_of_instructions = 10;
+for (EyeStep::inst instr : EyeStep::read(from, number_of_instructions))
+{
+    std::cout << instr.data << std::endl;
+}
+
 
 
 The EyeStep::inst / instruction class contains the following:
