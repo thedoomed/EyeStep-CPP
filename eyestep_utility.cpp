@@ -739,6 +739,7 @@ namespace EyeStep
 				return function;
 			}
 
+			uint8_t convert_stdcall = FALSE; // personal switch :)
 			uint32_t func = function;
 			uint32_t size = 0;
 			uint8_t data[128];
@@ -766,7 +767,7 @@ namespace EyeStep
 				data[size++] = 0xE8; // call func
 				*reinterpret_cast<uint32_t*>(data + size) = func - (new_func + size + 4);
 				size += 4;
-				data[size++] = 0x83;
+				data[size++] = 0x83; // add esp, (n_args * 4)
 				data[size++] = 0xC4;
 				data[size++] = n_args * 4;
 			}
@@ -819,6 +820,7 @@ namespace EyeStep
 				data[size++] = 0x8B; // mov ecx,[ebp+08]
 				data[size++] = 0x4D;
 				data[size++] = 0x08;
+
 				data[size++] = 0x8B; // mov edx,[ebp+0C]
 				data[size++] = 0x55;
 				data[size++] = 0x0C;
@@ -831,11 +833,16 @@ namespace EyeStep
 				data[size++] = 0x5A; // pop edx
 			}
 
-			data[size++] = 0x5D; // pop ebp
-			data[size++] = 0xC3; // retn
-			//data[size++] = 0xC2; // ret xx
-			//data[size++] = n_Args * 4;
-			//data[size++] = 0x00;
+			if (!convert_stdcall)
+			{
+				data[size++] = 0x5D; // pop ebp
+				data[size++] = 0xC3; // retn
+			}
+			else {
+				data[size++] = 0xC2; // ret xx
+				data[size++] = n_args * 4;
+				data[size++] = 0x00;
+			}
 
 			memcpy_s(reinterpret_cast<void*>(new_func), size, &data, size);
 
