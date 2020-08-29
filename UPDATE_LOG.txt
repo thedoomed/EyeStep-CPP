@@ -1,6 +1,7 @@
 8/29/2020
 
-Major bug fixes, everything seems to be functional and as expected
+Major bug fixes, everything seems to be functional and as expected.
+Documentation on the API will be coming any day now
 
 8/26/2020
 
