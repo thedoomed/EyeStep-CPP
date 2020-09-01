@@ -384,15 +384,26 @@ namespace EyeStep
 
 		uint32_t getEpilogue(uint32_t address)
 		{
-			uint32_t epilogue = util::nextPrologue(address);
+			uint32_t next_func = util::nextPrologue(address);
+			uint32_t at = next_func;
 
 			// Get the return of this function
-			while (!util::isEpilogue(epilogue))
+			while (!util::isEpilogue(at))
 			{
-				epilogue--;
+				at--;
 			}
 
-			return epilogue;
+			if (at < address)
+			{
+				at = next_func;
+
+				if (util::readByte(at - 1) == 0xCC)
+				{
+					return at - 1;
+				}
+			}
+
+			return at;
 		}
 
 		uint16_t getRetn(uint32_t address)
