@@ -1072,9 +1072,12 @@ namespace EyeStep
 
 		if (util::readByte(func_end) == 0xC3)
 		{
+			stack_cleanup = 0;
 			func_end += 1;
 		}
-		else {
+		else if (util::readByte(func_end) == 0xC2)
+		{
+			stack_cleanup = util::readShort(func_end + 1);
 			func_end += 3;
 		}
 
@@ -1115,6 +1118,8 @@ namespace EyeStep
 		while (at < func_end)
 		{
 			auto i = EyeStep::read(at);
+
+			//printf("%s\n", i.data);
 
 			auto src = i.source();
 			auto dest = i.destination();
@@ -1159,6 +1164,28 @@ namespace EyeStep
 						ebp_args.push_back(src.imm8);
 						args.push_back({ src.imm8, 32, false, at });
 					}
+				}
+
+				// Figure out what the very last thing is
+				// that gets placed into EAX ( the return value )
+				// mov eax, ???
+				// or eax, ???
+				if (src.reg[0] == R32_EAX)
+				{
+					if (opcode.find("mov ") != std::string::npos
+					 || opcode.find("or ") != std::string::npos
+						) {
+						return_value = dest;
+					}
+				} else if (src.reg[0] == R32_ECX)
+				{
+					ecx_set = TRUE;
+				}
+				else if (src.reg[0] == R32_EDX)
+				{
+					convention = c_auto; // let it be determined by the function return
+					edx_set = TRUE;
+					break;
 				}
 
 				// does the destination operand use a register?
@@ -1209,32 +1236,12 @@ namespace EyeStep
 					}
 					else 
 					{
-						// Figure out what the very last thing is
-						// that gets placed into EAX ( the return value )
-						// mov eax, ???
-						// or eax, ???
-						if (src.reg[0] == R32_EAX)
-						{
-							if (opcode.find("mov ") != std::string::npos
-							 || opcode.find("or ") != std::string::npos
-								) {
-								return_value = dest;
-							}
-						}
-
-						if (src.reg[0] == R32_ECX)
-						{
-							ecx_set = TRUE;
-						}
-						else if (src.reg[0] == R32_EDX)
-						{
-							edx_set = TRUE;
-						}
 						// EDX was used in the destination operand, before
 						// it was allocated. It must be a fastcall.
-						else if (dest.reg[0] == R32_EDX && !edx_set)
+						if (dest.reg[0] == R32_EDX && !edx_set)
 						{
 							convention = c_fastcall;
+							break;
 						}
 						// ECX was used in the destination operand, before
 						// it was allocated. It must be a thiscall.
@@ -1291,7 +1298,10 @@ namespace EyeStep
 		else if (convention == c_auto)
 		{
 			// set the default calling convention if it could not be identified...
-			convention = c_cdecl; // maybe do what IDA pro does and put "usercall" L0L.
+			if (!stack_cleanup)
+				convention = c_cdecl;
+			else
+				convention = c_stdcall;
 		}
 
 		// adjust args...check for args that were used
@@ -1380,6 +1390,8 @@ namespace EyeStep
 		}
 
 		strcat(psuedocode, ")");
+
+		//system("PAUSE");
 	}
 
 
