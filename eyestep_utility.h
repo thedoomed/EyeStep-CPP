@@ -101,8 +101,10 @@ namespace EyeStep
 	namespace io
 	{
 		extern std::string readFile(const char* filename);
-		extern void writeFile(const char* filename, std::string field);
-		extern void appendFile(const char* filename, std::string field);
+		extern void writeFile(const char* filename, void* data, size_t size);
+		extern void appendFile(const char* filename, void* data, size_t size);
+		extern inline bool checkFileExists(const char* filename);
+		extern std::string readRawHttp(const char* sUrl);
 	}
 
 	namespace remote
