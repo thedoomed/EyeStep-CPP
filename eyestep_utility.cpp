@@ -1387,23 +1387,46 @@ namespace EyeStep
 			return output;
 		}
 
-		void writeFile(const char* filename, std::string field)
+		void writeFile(const char* filename, void* data, size_t size)
 		{
+			char* char_array = reinterpret_cast<char*>(data);
 			std::ofstream outfile(filename, std::ofstream::trunc); // truncate
-			outfile << field;
-			outfile.close();
+			if (outfile.is_open())
+			{
+				for (size_t i = 0; i < size; i++)
+				{
+					outfile << char_array[i];
+				}
+				outfile.close();
+			}
 		}
 
-		void appendFile(const char* filename, std::string field)
+		void appendFile(const char* filename, void* data, size_t size)
 		{
+			char* char_array = reinterpret_cast<char*>(data);
 			std::ofstream outfile(filename, std::ios_base::app); // append instead of overwrite
-			outfile << field;
-			outfile.close();
+			if (outfile.is_open())
+			{
+				for (size_t i = 0; i < size; i++)
+				{
+					outfile << char_array[i];
+				}
+				outfile.close();
+			}
 		}
 
-		std::string readRawHttp(const char* url)
+		inline bool checkFileExists(const std::string& name) 
 		{
+			std::ifstream f(name.c_str());
+			return f.good();
+		}
 
+
+		std::string readRawHttp(const char* sUrl)
+		{
+			// Ask JAY#7902 to work on this when he's
+			// not busy on proto conversion!!
+			return "not done yet :-(";
 		}
 	}
 
