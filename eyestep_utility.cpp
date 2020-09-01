@@ -303,14 +303,23 @@ namespace EyeStep
 
 		bool isEpilogue(uint32_t address)
 		{
+			// 1. Check for a pop ebp + retn/ret 
+			// 2. Check for a leave + retn/ret
 			return (
 				(readShort(address - 1) == 0xC35D)
 				||
 				(readShort(address - 1) == 0xC25D
 					&& readShort(address + 1) >= 0
 					&& readShort(address + 1) % 4 == 0
-					)
-				);
+				)
+			) || (
+				(readShort(address - 1) == 0xC3C9)
+				||
+				(readShort(address - 1) == 0xC2C9
+					&& readShort(address + 1) >= 0
+					&& readShort(address + 1) % 4 == 0
+				)
+			);
 		}
 
 		// determines whether the address is
@@ -1083,7 +1092,6 @@ namespace EyeStep
 
 			delete[] bytes_strlen;
 		}
-
 
 		uint8_t ecx_set = FALSE;
 		uint8_t edx_set = FALSE;
