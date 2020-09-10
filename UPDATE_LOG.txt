@@ -1,3 +1,9 @@
+9/10/2020
+
+Adjusted some instructions, to match a little bit more closely to IDA Pro's output.
+I'm still working out segments and flags/markers for disassembly.. (e.g. byte ptr, dword ptr, qword ptr, ...)
+Just been busy lately
+
 8/29/2020
 
 Major bug fixes, everything seems to be functional and as expected.
