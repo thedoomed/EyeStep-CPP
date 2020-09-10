@@ -1,8 +1,9 @@
 9/10/2020
 
 Adjusted some instructions, to match a little bit more closely to IDA Pro's output.
-I'm still working out segments and flags/markers for disassembly.. (e.g. byte ptr, dword ptr, qword ptr, ...)
-Just been busy lately
+I'm still working out segments and markers in the disassembly output.. (like 'byte ptr', 'dword ptr', 'qword ptr', ...)
+Just been busy lately.
+I intend to add an entire parser for writing assembly code at a memory location, very soon
 
 8/29/2020
 
