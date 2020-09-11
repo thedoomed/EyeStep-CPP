@@ -309,6 +309,8 @@ namespace EyeStep
 
 	extern void* current_proc;
 
+	extern void init(); // CALL THIS FIRST, UNLESS YOU USED `EyeStep::open(...)`
+	extern void flush(); // CALL THIS AT THE END OF THE PROGRAM
 	extern HMODULE get_base_module(HANDLE proc, std::wstring process_name);
 	extern void open(HANDLE current_proc, HMODULE _module = nullptr);
 	extern void open(std::wstring process_name);
@@ -319,6 +321,8 @@ namespace EyeStep
 
 	extern uint8_t to_byte(std::string, int offset = 0);
 	extern std::string to_str(uint8_t);
+
+	extern OP_INFO* OP_TABLE;
 }
 
 #endif
