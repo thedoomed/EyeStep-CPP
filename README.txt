@@ -51,7 +51,7 @@ for (EyeStep::inst instr : EyeStep::read(from, number_of_instructions))
 
 
 
-The EyeStep::inst / instruction class contains the following:
+The EyeStep::inst / instruction class contains the following members:
 
 data - text translation of disassembly
 len - length of instruction
@@ -95,6 +95,8 @@ operands[0].disp32 = 10000000 // constant value
 mov eax,[10000000] \/\/\/
 operands[0].opmode = imm32
 operands[0].imm32 = 10000000
+
+
 
 
 
