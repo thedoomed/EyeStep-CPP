@@ -16,15 +16,15 @@ in the future.
 # Usage
 
 To use EyeStep you simply include eyestep.h where needed.
-Use the following to initialise EyeStep in A DLL; This must
-come FIRST before you do anything else:
+To initialise EyeStep in A DLL, you must place this
+FIRST before you do anything:
 EyeStep::open(GetCurrentProcess());
 
-If you're running in an EXE, you can do this instead:
+If you want to initialise EyeStep in an EXE, you do this instead:
 EyeStep::open("ProcessNameHere.exe");
 
 
-Use EyeStep::read(address) to translate the instruction at 'address' --->
+Use EyeStep::read(address) to translate the instruction at 'address'.
 
 auto instr = EyeStep::read(0x12000000); // returns an 'EyeStep::inst' object
 std::cout << instr.data << std::endl; // displays its disassembled output
