@@ -77,6 +77,7 @@ namespace EyeStep
 		extern uint16_t getRetn(uint32_t func);
 		extern uint32_t getPrologue(uint32_t func);
 		extern uint32_t getEpilogue(uint32_t func);
+		extern uint32_t prevPrologue(uint32_t address);
 		extern uint32_t nextPrologue(uint32_t address);
 		extern uint32_t nextCall(uint32_t address, bool location = false, bool prologue = false);
 		extern uint32_t prevCall(uint32_t address, bool location = false, bool prologue = false);
