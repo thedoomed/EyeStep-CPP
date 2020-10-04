@@ -283,9 +283,9 @@ namespace EyeStep
 		{
 			return (
 				isRel(address)
-				&& getRel(address) > reinterpret_cast<uint32_t>(base_module)
-				&& getRel(address) < reinterpret_cast<uint32_t>(base_module) + base_module_size
-				);
+			 && getRel(address) > reinterpret_cast<uint32_t>(base_module)
+			 && getRel(address) < reinterpret_cast<uint32_t>(base_module) + base_module_size
+			);
 		}
 
 		bool isPrologue(uint32_t address)
@@ -296,9 +296,9 @@ namespace EyeStep
 				&&
 				// Check for 3 different prologues, each with different registers
 				((readByte(address) == 0x55 && readShort(address + 1) == 0xEC8B)
-					|| (readByte(address) == 0x53 && readShort(address + 1) == 0xDC8B)
-					|| (readByte(address) == 0x56 && readShort(address + 1) == 0xF48B))
-				);
+			  || (readByte(address) == 0x53 && readShort(address + 1) == 0xDC8B)
+			  || (readByte(address) == 0x56 && readShort(address + 1) == 0xF48B))
+			);
 		}
 
 		bool isEpilogue(uint32_t address)
@@ -307,17 +307,17 @@ namespace EyeStep
 			// 2. Check for a leave + retn/ret
 			return (
 				(readShort(address - 1) == 0xC35D)
-				||
+			 ||
 				(readShort(address - 1) == 0xC25D
-					&& readShort(address + 1) >= 0
-					&& readShort(address + 1) % 4 == 0
+			 &&	 readShort(address + 1) >= 0
+			 &&  readShort(address + 1) % 4 == 0
 				)
 			) || (
 				(readShort(address - 1) == 0xC3C9)
 				||
 				(readShort(address - 1) == 0xC2C9
-					&& readShort(address + 1) >= 0
-					&& readShort(address + 1) % 4 == 0
+			 &&  readShort(address + 1) >= 0
+			 &&  readShort(address + 1) % 4 == 0
 				)
 			);
 		}
@@ -327,7 +327,7 @@ namespace EyeStep
 		// by simply checking for 16 null bytes
 		bool isValidCode(uint32_t address)
 		{
-			return !(readQword(address) == NULL && readQword(address + 8) == NULL);
+			return !(readQword(address) == 0 && readQword(address + 8) == 0);
 		}
 
 		uint32_t getRel(uint32_t address)
@@ -384,11 +384,11 @@ namespace EyeStep
 
 		uint32_t getEpilogue(uint32_t address)
 		{
-			uint32_t next_func = util::nextPrologue(address);
+			uint32_t next_func = nextPrologue(address);
 			uint32_t at = next_func;
 
 			// Get the return of this function
-			while (!util::isEpilogue(at))
+			while (!isEpilogue(at))
 			{
 				at--;
 			}
@@ -397,7 +397,7 @@ namespace EyeStep
 			{
 				at = next_func;
 
-				if (util::readByte(at - 1) == 0xCC)
+				if (readByte(at - 1) == 0xCC)
 				{
 					return at - 1;
 				}
@@ -410,7 +410,7 @@ namespace EyeStep
 		{
 			uint32_t epilogue = getEpilogue(address);
 
-			if (util::readByte(epilogue) == 0xC2)
+			if (readByte(epilogue) == 0xC2)
 			{
 				return readShort(epilogue + 1);
 			}
@@ -422,6 +422,7 @@ namespace EyeStep
 		{
 			uint32_t at = address;
 
+			// skip current call or jmp (if possible)
 			if (readByte(at) == 0xE8 || readByte(at) == 0xE9)
 			{
 				at++;
@@ -431,11 +432,10 @@ namespace EyeStep
 			{
 				if ((
 					readByte(at) == 0xE8
-					|| readByte(at) == 0xE9
+				 || readByte(at) == 0xE9
 					)
-					&&
-					isCall(at)
-					) {
+				 && isCall(at)
+				){
 					bool has_prologue = true;
 
 					// check if we need to get the prologue
@@ -446,26 +446,28 @@ namespace EyeStep
 
 					if (has_prologue)
 					{
-						if (location)
-						{
-							return at;
-						}
-						else
-						{
-							return getRel(at);
-						}
+						break;
 					}
 				}
+
 				at++;
 			}
 
-			return (prologue) ? getPrologue(at) : at;
+			if (location)
+			{
+				return at;
+			}
+			else
+			{
+				return getRel(at);
+			}
 		}
 
 		uint32_t prevCall(uint32_t address, bool location, bool prologue)
 		{
 			uint32_t at = address;
 
+			// skip current call or jmp (if possible)
 			if (readByte(at) == 0xE8 || readByte(at) == 0xE9)
 			{
 				at--;
@@ -475,11 +477,10 @@ namespace EyeStep
 			{
 				if ((
 					readByte(at) == 0xE8
-					|| readByte(at) == 0xE9
+				 || readByte(at) == 0xE9
 					)
-					&&
-					isCall(at)
-					) {
+				 && isCall(at)
+				){
 					bool has_prologue = true;
 
 					// check if we need to get the prologue
@@ -490,20 +491,21 @@ namespace EyeStep
 
 					if (has_prologue)
 					{
-						if (location)
-						{
-							return at;
-						}
-						else
-						{
-							return getRel(at);
-						}
+						break;
 					}
 				}
+
 				at--;
 			}
 
-			return (prologue) ? getPrologue(at) : at;
+			if (location)
+			{
+				return at;
+			}
+			else
+			{
+				return getRel(at);
+			}
 		}
 
 		uint32_t nextRef(uint32_t start, uint32_t func_search, bool prologue)
@@ -514,11 +516,10 @@ namespace EyeStep
 			{
 				if ((
 					readByte(at) == 0xE8
-					|| readByte(at) == 0xE9
-					)
-					&&
-					getRel(at) == func_search
-					) {
+				 || readByte(at) == 0xE9
+				)
+				 && getRel(at) == func_search
+				){
 					break;
 				}
 
@@ -536,11 +537,10 @@ namespace EyeStep
 			{
 				if ((
 					readByte(at) == 0xE8
-					|| readByte(at) == 0xE9
-					)
-					&&
-					getRel(at) == func_search
-					) {
+				 || readByte(at) == 0xE9
+				)
+				 && getRel(at) == func_search
+				){
 					break;
 				}
 
@@ -589,10 +589,15 @@ namespace EyeStep
 			uint32_t at = address;
 			uint32_t func_end = nextPrologue(at);
 
-			while (at < func_end)
+			for (at; at < func_end; at++)
 			{
-				calls.push_back(nextCall(at));
-				at = nextCall(at, true) + 5;
+				if (readByte(at) == 0xE8 || readByte(at) == 0xE9)
+				{
+					if (isCall(at))
+					{
+						calls.push_back(getRel(at));
+					}
+				}
 			}
 
 			return calls;
@@ -616,6 +621,15 @@ namespace EyeStep
 				else if (i.destination().flags & OP_DISP32 && i.destination().disp32 % 4 == 0)
 				{
 					pointers.push_back(i.destination().disp32);
+				}
+
+				if (i.source().flags & OP_IMM32 && i.source().imm32 % 4 == 0 && i.source().imm32 > reinterpret_cast<uint32_t>(base_module))
+				{
+					pointers.push_back(i.source().imm32);
+				}
+				else if (i.destination().flags & OP_IMM32 && i.destination().imm32 % 4 == 0 && i.source().imm32 < reinterpret_cast<uint32_t>(base_module) + base_module_size)
+				{
+					pointers.push_back(i.destination().imm32);
 				}
 
 				at += i.len;
@@ -1155,8 +1169,12 @@ namespace EyeStep
 					uint8_t found = FALSE;
 
 					for (uint32_t arg : ebp_args)
+					{
 						if (src.imm8 == arg)
+						{
 							found = TRUE;
+						}
+					}
 
 					if (!found)
 					{
@@ -1177,15 +1195,14 @@ namespace EyeStep
 						) {
 						return_value = dest;
 					}
-				} else if (src.reg[0] == R32_ECX)
+				} else if (src.reg[0] == R32_ECX && src.flags & OP_R32)
 				{
 					ecx_set = TRUE;
 				}
-				else if (src.reg[0] == R32_EDX)
+				else if (src.reg[0] == R32_EDX && src.flags & OP_R32)
 				{
-					convention = c_auto; // let it be determined by the function return
+					convention = c_auto; // let it be determinable still (if its a __thiscall/etc.)
 					edx_set = TRUE;
-					break;
 				}
 
 				// does the destination operand use a register?
@@ -1199,8 +1216,12 @@ namespace EyeStep
 						uint8_t found = FALSE;
 
 						for (uint32_t arg : ebp_args)
+						{
 							if (dest.imm8 == arg)
+							{
 								found = TRUE;
+							}
+						}
 
 						if (!found)
 						{
@@ -1238,18 +1259,19 @@ namespace EyeStep
 					{
 						// EDX was used in the destination operand, before
 						// it was allocated. It must be a fastcall.
-						if (dest.reg[0] == R32_EDX && !edx_set)
+						if (dest.reg[0] == R32_EDX && !edx_set && dest.flags & OP_R32)
 						{
 							convention = c_fastcall;
 							break;
 						}
 						// ECX was used in the destination operand, before
 						// it was allocated. It must be a thiscall.
-						else if (dest.reg[0] == R32_ECX && !ecx_set)
+						else if (dest.reg[0] == R32_ECX && !ecx_set && dest.flags & OP_R32)
 						{
 							if (convention != c_fastcall)
 							{
 								convention = c_thiscall;
+								break;
 							}
 						}
 					}
