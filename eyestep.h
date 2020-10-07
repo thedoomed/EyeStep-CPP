@@ -213,36 +213,15 @@ namespace EyeStep
 
 	struct operand
 	{
-		operand()
-		{
-			rel8 = 0;
-			rel16 = 0;
-			rel32 = 0;
-			imm8 = 0;
-			imm16 = 0;
-			imm32 = 0;
-			disp8 = 0;
-			disp16 = 0;
-			disp32 = 0;
-			mul = 0;
-			opmode = 0;
-			flags = 0;
-		}
-
-		~operand()
-		{
-		}
+		operand();
+		~operand();
 
 		uint32_t flags;
 		uint8_t opmode;
 		std::vector<uint8_t> reg;
 		uint8_t mul; // single multiplier
 
-		uint8_t append_reg(uint8_t reg_type)
-		{
-			reg.push_back(reg_type);
-			return reg_type;
-		}
+		uint8_t append_reg(uint8_t reg_type);
 
 		union
 		{
@@ -268,6 +247,9 @@ namespace EyeStep
 
 	struct inst
 	{
+		inst();
+		~inst();
+
 		char data[256];
 		OP_INFO info;
 
@@ -277,34 +259,8 @@ namespace EyeStep
 		uintptr_t address;
 		std::vector<operand>operands;
 
-		inst()
-		{
-			data[0] = '\0';
-			info = OP_INFO();
-
-			operands = std::vector<operand>(4);
-
-			address = 0;
-			flags = 0;
-			len = 0;
-		}
-
-		~inst()
-		{
-			operands.clear();
-		}
-
-		operand source()
-		{
-			if (operands.size() <= 0) return operand();
-			return operands[0];
-		}
-
-		operand destination()
-		{
-			if (operands.size() <= 1) return operand();
-			return operands[1];
-		}
+		operand src();
+		operand dest();
 	};
 
 	extern void* current_proc;
