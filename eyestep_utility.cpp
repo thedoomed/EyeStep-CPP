@@ -614,22 +614,22 @@ namespace EyeStep
 			{
 				auto i = EyeStep::read(at);
 
-				if (i.source().flags & OP_DISP32 && i.source().disp32 % 4 == 0)
+				if (i.src().flags & OP_DISP32 && i.src().disp32 % 4 == 0)
 				{
-					pointers.push_back(i.source().disp32);
+					pointers.push_back(i.src().disp32);
 				}
-				else if (i.destination().flags & OP_DISP32 && i.destination().disp32 % 4 == 0)
+				else if (i.dest().flags & OP_DISP32 && i.dest().disp32 % 4 == 0)
 				{
-					pointers.push_back(i.destination().disp32);
+					pointers.push_back(i.dest().disp32);
 				}
 
-				if (i.source().flags & OP_IMM32 && i.source().imm32 % 4 == 0 && i.source().imm32 > reinterpret_cast<uint32_t>(base_module))
+				if (i.src().flags & OP_IMM32 && i.src().imm32 % 4 == 0 && i.src().imm32 > reinterpret_cast<uint32_t>(base_module))
 				{
-					pointers.push_back(i.source().imm32);
+					pointers.push_back(i.src().imm32);
 				}
-				else if (i.destination().flags & OP_IMM32 && i.destination().imm32 % 4 == 0 && i.source().imm32 < reinterpret_cast<uint32_t>(base_module) + base_module_size)
+				else if (i.dest().flags & OP_IMM32 && i.dest().imm32 % 4 == 0 && i.src().imm32 < reinterpret_cast<uint32_t>(base_module) + base_module_size)
 				{
-					pointers.push_back(i.destination().imm32);
+					pointers.push_back(i.dest().imm32);
 				}
 
 				at += i.len;
@@ -681,8 +681,8 @@ namespace EyeStep
 
 				if (i.flags & OP_SRC_DEST || i.flags & OP_SINGLE)
 				{
-					auto src = i.source();
-					auto dest = i.destination();
+					auto src = i.src();
+					auto dest = i.dest();
 
 					if (src.flags & OP_R32)
 					{
@@ -968,7 +968,6 @@ namespace EyeStep
 			else
 				new_func = reinterpret_cast<uint32_t>(VirtualAlloc(nullptr, 256, MEM_COMMIT, PAGE_EXECUTE_READWRITE));
 
-
 			// Places we can store values -- "variables"
 			vars = new_func + 128;
 			signal = new_func + 124;
@@ -1135,8 +1134,8 @@ namespace EyeStep
 
 			//printf("%s\n", i.data);
 
-			auto src = i.source();
-			auto dest = i.destination();
+			auto src = i.src();
+			auto dest = i.dest();
 
 			std::string opcode = "";
 			opcode += i.data;
