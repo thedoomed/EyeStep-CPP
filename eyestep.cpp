@@ -164,6 +164,62 @@ namespace EyeStep
 	size_t base_module_size = NULL;
 	bool external_mode = false;
 
+	operand::operand()
+	{
+		rel8 = 0;
+		rel16 = 0;
+		rel32 = 0;
+		imm8 = 0;
+		imm16 = 0;
+		imm32 = 0;
+		disp8 = 0;
+		disp16 = 0;
+		disp32 = 0;
+		mul = 0;
+		opmode = 0;
+		flags = 0;
+	}
+
+	operand::~operand()
+	{
+	}
+
+	uint8_t operand::append_reg(uint8_t reg_type)
+	{
+		reg.push_back(reg_type);
+		return reg_type;
+	}
+
+	inst::inst()
+	{
+		data[0] = '\0';
+		info = OP_INFO();
+
+		operands = std::vector<operand>(4);
+
+		address = 0;
+		flags = 0;
+		len = 0;
+	}
+
+	inst::~inst()
+	{
+		operands.clear();
+	}
+
+	operand inst::src()
+	{
+		if (operands.size() <= 0) return operand();
+		return operands[0];
+	}
+
+	operand inst::dest()
+	{
+		if (operands.size() <= 1) return operand();
+		return operands[1];
+	}
+	
+
 	// This has been optimized so that the
 	// prefix, two-mode byte, and opcode byte 
 	// are all packed into the same string
