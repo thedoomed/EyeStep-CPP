@@ -5,9 +5,7 @@
 
 /* Made by static, 8/22/2020
  * If you modify, redistribute, or copy parts of this source code
- * I'd highly appreciate some credit.
- * Do me a favor and leave this comment in.
- * I'm too poor to afford a legal copyright so enjoy
+ * I'd highly appreciate some credit
 */
 
 #include <cstdint>
