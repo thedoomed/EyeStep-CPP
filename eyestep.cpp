@@ -5,7 +5,7 @@
 #include "eyestep.h"
 
 #define MOD_NOT_FIRST 255
-#define N_X86_OPCODES 919 // amount of opcodes/information in our reference table
+#define N_X86_OPCODES 920 // amount of opcodes/information in our reference table
 
 namespace mnemonics
 {
@@ -166,6 +166,7 @@ namespace EyeStep
 
 	operand::operand()
 	{
+		n_reg = 0;
 		rel8 = 0;
 		rel16 = 0;
 		rel32 = 0;
@@ -178,6 +179,8 @@ namespace EyeStep
 		mul = 0;
 		opmode = 0;
 		flags = 0;
+
+		reg = std::vector<uint8_t>(4);
 	}
 
 	operand::~operand()
@@ -186,7 +189,7 @@ namespace EyeStep
 
 	uint8_t operand::append_reg(uint8_t reg_type)
 	{
-		reg.push_back(reg_type);
+		reg[n_reg++] = (reg_type);
 		return reg_type;
 	}
 
@@ -1149,6 +1152,7 @@ namespace EyeStep
 			{ "FF+m4", "jmp", { r_m16_32 },					"Jump" },
 			{ "FF+m5", "jmpf", { m16_32_and_16_32 },		"Jump" },
 			{ "FF+m6", "push", { r_m16_32 },				"Push Word, Doubleword or Quadword Onto the Stack" },
+			{ "FF+m7", "push", { r_m16_32 },				"Push Word, Doubleword or Quadword Onto the Stack" },
 		};
 	}
 
@@ -1361,6 +1365,7 @@ namespace EyeStep
 				break;
 			case OP_LOCK:
 				p.flags |= PRE_LOCK;
+				*at++;
 				if (opcode_byte != OP_LOCK)
 				{
 					show_prefix = TRUE;
@@ -1368,6 +1373,7 @@ namespace EyeStep
 				break;
 			case OP_REPNE:
 				p.flags |= PRE_REPNE;
+				*at++;
 				if (opcode_byte != OP_REPNE)
 				{
 					show_prefix = TRUE;
@@ -1375,6 +1381,7 @@ namespace EyeStep
 				break;
 			case OP_REPE:
 				p.flags |= PRE_REPE;
+				*at++;
 				if (opcode_byte != OP_REPE)
 				{
 					show_prefix = TRUE;
@@ -1447,19 +1454,19 @@ namespace EyeStep
 				// move onto the next byte
 				at++;
 
-				if (show_prefix)
+				if (show_prefix == TRUE)
 				{
-					switch (p.flags)
+					if (p.flags & PRE_LOCK)
 					{
-					case PRE_LOCK:
 						strcpy(p.data, "lock ");
-						break;
-					case PRE_REPNE:
+					}
+					else if (p.flags & PRE_REPNE)
+					{
 						strcpy(p.data, "repne ");
-						break;
-					case PRE_REPE:
+					}
+					else if (p.flags & PRE_REPE)
+					{
 						strcpy(p.data, "repe ");
-						break;
 					}
 				}
 
@@ -1467,6 +1474,7 @@ namespace EyeStep
 				strcat(p.data, " ");
 
 				size_t noperands = op_info.operands.size();
+
 				p.operands = std::vector<operand>(noperands); // allocate for the # of operands
 				p.info = op_info;
 
