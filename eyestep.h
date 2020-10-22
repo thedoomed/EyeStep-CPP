@@ -5,7 +5,7 @@
 
 /* Made by static, 8/22/2020
  * If you modify, redistribute, or copy parts of this source code
- * I'd highly appreciate some credit
+ * I'd highly appreciate some credit.
 */
 
 #include <cstdint>
@@ -211,6 +211,9 @@ namespace EyeStep
 
 	struct operand
 	{
+	private:
+		uint8_t n_reg;
+	public:
 		operand();
 		~operand();
 
