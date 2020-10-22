@@ -684,21 +684,22 @@ namespace EyeStep
 					auto src = i.src();
 					auto dest = i.dest();
 
-					if (src.flags & OP_R32)
+					if (dest.flags & OP_R32)
 					{
-						if (dest.flags & OP_R32)
+						if (dest.flags & OP_IMM8 && dest.reg[0] == R32_EBP && dest.imm8 != 4 && dest.imm8 < 0x7F)
 						{
-							if (dest.flags & OP_IMM8 && dest.reg[0] == R32_EBP && dest.imm8 != 4 && dest.imm8 < 0x7F)
-							{
-								// printf("arg offset: %02X\n", dest.imm8);
+							// printf("arg offset: %02X\n", dest.imm8);
 
-								if (dest.imm8 > args)
-								{
-									args = dest.imm8;
-								}
+							if (dest.imm8 > args)
+							{
+								args = dest.imm8;
 							}
 						}
-						else if (src.flags & OP_IMM8 && src.reg[0] == R32_EBP && src.imm8 != 4 && src.imm8 < 0x7F)
+					}
+
+					if (src.flags & OP_R32)
+					{
+						if (src.flags & OP_IMM8 && src.reg[0] == R32_EBP && src.imm8 != 4 && src.imm8 < 0x7F)
 						{
 							// printf("arg offset: %02X\n", src.imm8);
 
@@ -722,10 +723,8 @@ namespace EyeStep
 				{
 				case 1:
 					return c_thiscall;
-					break;
 				case 2:
 					return c_fastcall;
-					break;
 				}
 			}
 
