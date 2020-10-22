@@ -1,15 +1,23 @@
-9/10/2020
+10/22/20
+
+MAJOR fixes to the determination of calling conventions...
+The psuedo-code output from the Analyze function is not fully tested,
+but I have redone the entire method for getting a calling convention
+automatically (Based within the function itself, no external XREFS)
+
+
+9/10/20
 
 Adjusted some instructions, to match a little bit more closely to IDA Pro's output.
 I'm still working out segments and markers in the disassembly output.. (like 'byte ptr', 'dword ptr', 'qword ptr', ...)
 Just been busy lately.
 I intend to add an entire parser for writing assembly code at a memory location, very soon
 
-8/29/2020
+8/29/20
 
 Major bug fixes, everything seems to be functional and as expected.
 Documentation on the API will be coming any day now
 
-8/26/2020
+8/26/20
 
 minor bug fixes, tweaking on function analyzer and prefix flags
