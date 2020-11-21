@@ -97,17 +97,6 @@ operands[0].opmode = imm32
 operands[0].imm32 = 10000000
 
 
-
-
-
-
-# API / Utility library
-
-eyestep_utility.h and eyestep_utility.cpp provide a vast range
-of functions for reading/writing/processing memory in either a
-DLL or remote application.
-
-Documentation on its way
-
-
+# For more help on using EyeStep to disassemble instructions
+please contact Celery#7902
 
