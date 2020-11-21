@@ -1,9 +1,9 @@
 # About
 
-EyeStep is a full and compact intel x86 disassembler designed
+EyeStep is a full, compact x86 disassembler designed
 for both internal(DLL) and executable(EXE) applications.
 
-It is original and table-based from the insight/references provided at:
+It is original, based on the intel references at:
 http://ref.x86asm.net/coder32.html
 
 It features everything except for SIMD instructions
