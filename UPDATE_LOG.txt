@@ -3,7 +3,7 @@
 EyeStep utility was removed because I rushed it.
 Too many complains about /how/ it was coded, or whatever.
 Check out my new Memory repository.
-Hopefully I don't get arsed about using DWORD_PTR now
+Hopefully I don't get arsed about using DWORD_PTR (over uintptr_t)
 in a library that is dependant on WINAPI.
 
 
