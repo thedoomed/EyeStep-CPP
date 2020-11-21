@@ -75,26 +75,32 @@ imm8/imm16/imm32 - the offset value used in this operand --- Example: mov eax,[e
 disp8/disp16/disp32 - the constant value used in this operand --- Example: mov eax,DEADBEEF
 
 
-*** some examples of opmodes are:
+*** Here are examples of what an instruction's opmodes would be:
 
 mov eax,[ebx+04] \/\/\/
-operands[0].opmode = r16_32/r32 // this is what will be expected as the first operand's opmode
-operands[1].opmode = r_m16_32/r_m32 // second operand's opcode
+operands[0].opmode = r16_32/r32 // first operand is just a 32-bit register
+operands[1].opmode = r_m16_32/r_m32 // second operand includes modes (brackets, offsets, etc.)
 
 mov [ebx+04],eax \/\/\/
 operands[0].opmode = r_m16_32/r_m32
 operands[1].opmode = r16_32/r32
 
+Understanding what modes are will drastically help gain more control of instructions.
+They are defined by the byte being read.
+One byte can determine what register is being used in BOTH operands.
+
 call 0110CBF0 \/\/\/
 operands[0].opmode = rel32
 
 mov eax,10000000 \/\/\/
-operands[0].opmode = imm32 // (but disp32 gets set)
-operands[0].disp32 = 10000000 // constant value
+operands[0].opmode = r32
+operands[1].opmode = disp32
+operands[1].disp32 = 10000000 // constant/number value
 
 mov eax,[10000000] \/\/\/
-operands[0].opmode = imm32
-operands[0].imm32 = 10000000
+operands[0].opmode = r32
+operands[1].opmode = imm32
+operands[1].imm32 = 10000000 // offset/location in memory being read into eax
 
 
 # For more help on using EyeStep to disassemble instructions
