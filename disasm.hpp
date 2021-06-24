@@ -4,26 +4,26 @@
 #include <vector>
 
 // basic filters
-constexpr const std::uint32_t OP_NONE			= 0x00000000;
-constexpr const std::uint32_t OP_SINGLE			= 0x00000001;
-constexpr const std::uint32_t OP_SRC_DEST		= 0x00000002;
-constexpr const std::uint32_t OP_EXTENDED		= 0x00000004;
-constexpr const std::uint32_t OP_IMM8			= 0x00000010;
-constexpr const std::uint32_t OP_IMM16			= 0x00000020;
-constexpr const std::uint32_t OP_IMM32			= 0x00000040;
-constexpr const std::uint32_t OP_DISP8			= 0x00000080;
-constexpr const std::uint32_t OP_DISP16			= 0x00000100;
-constexpr const std::uint32_t OP_DISP32			= 0x00000200;
-constexpr const std::uint32_t OP_R8			= 0x00000400; 
-constexpr const std::uint32_t OP_R16			= 0x00000800; 
-constexpr const std::uint32_t OP_R32			= 0x00001000; 
-constexpr const std::uint32_t OP_R64			= 0x00002000; 
-constexpr const std::uint32_t OP_XMM			= 0x00004000; 
-constexpr const std::uint32_t OP_MM			= 0x00008000; 
-constexpr const std::uint32_t OP_ST			= 0x00010000; 
-constexpr const std::uint32_t OP_SREG			= 0x00020000; 
-constexpr const std::uint32_t OP_DR			= 0x00040000; 
-constexpr const std::uint32_t OP_CR			= 0x00080000; 
+constexpr std::uint32_t OP_NONE				= 0x00000000;
+constexpr std::uint32_t OP_SINGLE			= 0x00000001;
+constexpr std::uint32_t OP_SRC_DEST			= 0x00000002;
+constexpr std::uint32_t OP_EXTENDED			= 0x00000004;
+constexpr std::uint32_t OP_IMM8				= 0x00000010;
+constexpr std::uint32_t OP_IMM16			= 0x00000020;
+constexpr std::uint32_t OP_IMM32			= 0x00000040;
+constexpr std::uint32_t OP_DISP8			= 0x00000080;
+constexpr std::uint32_t OP_DISP16			= 0x00000100;
+constexpr std::uint32_t OP_DISP32			= 0x00000200;
+constexpr std::uint32_t OP_R8				= 0x00000400; 
+constexpr std::uint32_t OP_R16				= 0x00000800; 
+constexpr std::uint32_t OP_R32				= 0x00001000; 
+constexpr std::uint32_t OP_R64				= 0x00002000; 
+constexpr std::uint32_t OP_XMM				= 0x00004000; 
+constexpr std::uint32_t OP_MM				= 0x00008000; 
+constexpr std::uint32_t OP_ST				= 0x00010000; 
+constexpr std::uint32_t OP_SREG				= 0x00020000; 
+constexpr std::uint32_t OP_DR				= 0x00040000; 
+constexpr std::uint32_t OP_CR				= 0x00080000; 
 
 const enum : std::uint8_t
 {
