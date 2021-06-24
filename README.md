@@ -31,15 +31,15 @@ std::cout << inst.data << std::endl; // "mov eax,[ebp+08]"
 
 Now let's say, we're hoping to identify eax, ebp, and 8, programatically.
 The first thing we do is make sure it contains a source and destination operand:
-
+```
 if (inst.flags & OP_SRC_DEST)
 {
   // ...
 }
-
+```
 
 Okay, now, we can go right ahead and read the values in src(first half), and dest(second half):
-
+```
 if (inst.flags & OP_SRC_DEST)
 {
   std::cout << "first register used in source: " << inst.src().reg[0] << std::endl; // 0 ***
@@ -53,7 +53,7 @@ if (inst.flags & OP_SRC_DEST)
     std::cout << "the destination operand uses EBP!" << std::endl;
   }
 }
-
+```
 
 ***
 Remember, registers are stored as a number which goes in this order:
@@ -73,6 +73,7 @@ An operand that has [ebp+00000008] will have an `imm32` offset of 8.
 
 Now, if it's a constant value in the case of:
 mov eax,[00A7120C]
+
 This is called a `disp32` value.
 You can grab this value by doing: inst.dest().disp32.
 Unlike imm32, it is not an offset of a register, but a direct memory address instead.
