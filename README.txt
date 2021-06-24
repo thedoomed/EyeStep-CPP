@@ -35,7 +35,7 @@ if (inst.flags & OP_SRC_DEST)
 }
 
 
-Okay, now, we can go right ahead and read the values in src(first half/operand), and dest(second half/operand):
+Okay, now, we can go right ahead and read the values in src(first half), and dest(second half):
 
 if (inst.flags & OP_SRC_DEST)
 {
