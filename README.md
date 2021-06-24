@@ -18,17 +18,17 @@ To use DISA, simply call disa_load() once, to initialise the disassembler.
 
 Take a look at the Examples folder for help on starting out with DISA.
 
-Here is a run-down of things:
-Let's assume the address 0xDEADBEEF contains this instruction:
+Here is a run-down of things:<br>
+Let's assume the address 0xDEADBEEF contains this instruction:<br>
 `mov eax,[ebp+8];`
 
 First, we read it into a variable:<br>
 `const auto inst = disa_read(0xDEADBEEF); // store the instruction information into 'inst'`
 
-We can print the raw text translation of this instruction by doing:
+We can print the raw text translation of this instruction by doing:<br>
 `std::cout << inst.data << std::endl; // "mov eax,[ebp+08]"`
 
-Now let's say, we're hoping to identify eax, ebp, and 8, programatically.
+Now let's say, we're hoping to identify eax, ebp, and 8, programatically.<br>
 The first thing we do is make sure it contains a source and destination operand:
 ```
 if (inst.flags & OP_SRC_DEST)
@@ -55,29 +55,29 @@ if (inst.flags & OP_SRC_DEST)
 ```
 
 ***
-Remember, registers are stored as a number which goes in this order:
-```
-0 - EAX <---
-1 - ECX
-2 - EDX
-3 - EBX
-4 - ESP
-5 - EBP <---
-6 - ESI
-7 - EDI
-```
+Remember, registers are stored as a number which goes in this order:<br>
 
-An operand that has [ebp+8] (or, [ebp+08]) will have an 'imm8' offset of 8.
-An operand that has [ebp+0008] will have an 'imm16' offset of 8.
-An operand that has [ebp+00000008] will have an 'imm32' offset of 8.
+0 - EAX <---<br>
+1 - ECX<br>
+2 - EDX<br>
+3 - EBX<br>
+4 - ESP<br>
+5 - EBP <---<br>
+6 - ESI<br>
+7 - EDI<br>
 
-Now, if it's a constant value in the case of:
+
+An operand that has [ebp+8] (or, [ebp+08]) will have an 'imm8' offset of 8.<br>
+An operand that has [ebp+0008] will have an 'imm16' offset of 8.<br>
+An operand that has [ebp+00000008] will have an 'imm32' offset of 8.<br>
+
+Now, if it's a constant value in the case of:<br>
 `mov eax,[00A7120C]`
 
-This is called a 'disp32' value.
-You can grab this value by doing: inst.dest().disp32.
-Unlike imm32, it is not an offset of a register, but a direct memory address instead.
+This is called a 'disp32' value.<br>
+You can grab this value by doing: inst.dest().disp32.<br>
+Unlike imm32, it is not an offset of a register, but a direct memory address instead.<br>
 
-Hopefully this is enough to grasp the basics of disassembling with DISA
-Until I write up a proper documentation
+Hopefully this is enough to grasp the basics of disassembling with DISA<br>
+Until I write up a proper documentation<br>
 
