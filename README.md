@@ -8,7 +8,7 @@ http://ref.x86asm.net/coder32.html
 
 It features everything except for SIMD instructions,
 which I intend to add support for.
-I hope to add support for x64 as well.
+I plan to add support for x64 as well.
 
 
 
