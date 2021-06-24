@@ -1,5 +1,6 @@
 #include "disasm.hpp"
 #include <sstream>
+#include <iomanip>
 
 const enum disa_optypes : std::uint8_t
 {
@@ -1243,30 +1244,30 @@ const std::uint32_t longreg(const std::uint8_t x)
 
 
 // Stored Prefix flags 
-constexpr const std::uint16_t PRE_REPNE   		= 0x0001;
-constexpr const std::uint16_t PRE_REPE   		= 0x0002;
-constexpr const std::uint16_t PRE_66   			= 0x0004;
-constexpr const std::uint16_t PRE_67   			= 0x0008;
-constexpr const std::uint16_t PRE_LOCK 			= 0x0010;
-constexpr const std::uint16_t PRE_SEG_CS  		= 0x0020;
-constexpr const std::uint16_t PRE_SEG_SS  		= 0x0040;
-constexpr const std::uint16_t PRE_SEG_DS  		= 0x0080;
-constexpr const std::uint16_t PRE_SEG_ES  		= 0x0100;
-constexpr const std::uint16_t PRE_SEG_FS  		= 0x0200;
-constexpr const std::uint16_t PRE_SEG_GS  		= 0x0400;
+constexpr std::uint16_t PRE_REPNE   		= 0x0001;
+constexpr std::uint16_t PRE_REPE   			= 0x0002;
+constexpr std::uint16_t PRE_66   			= 0x0004;
+constexpr std::uint16_t PRE_67   			= 0x0008;
+constexpr std::uint16_t PRE_LOCK 			= 0x0010;
+constexpr std::uint16_t PRE_SEG_CS  		= 0x0020;
+constexpr std::uint16_t PRE_SEG_SS  		= 0x0040;
+constexpr std::uint16_t PRE_SEG_DS  		= 0x0080;
+constexpr std::uint16_t PRE_SEG_ES  		= 0x0100;
+constexpr std::uint16_t PRE_SEG_FS  		= 0x0200;
+constexpr std::uint16_t PRE_SEG_GS  		= 0x0400;
 
 // Prefix bytes
-constexpr const std::uint8_t OP_LOCK			= 0xF0;
-constexpr const std::uint8_t OP_REPNE			= 0xF2;
-constexpr const std::uint8_t OP_REPE			= 0xF3;
-constexpr const std::uint8_t OP_66				= 0x66;
-constexpr const std::uint8_t OP_67				= 0x67;
-constexpr const std::uint8_t OP_SEG_CS			= 0x2E;
-constexpr const std::uint8_t OP_SEG_SS			= 0x36;
-constexpr const std::uint8_t OP_SEG_DS			= 0x3E;
-constexpr const std::uint8_t OP_SEG_ES			= 0x26;
-constexpr const std::uint8_t OP_SEG_FS			= 0x64;
-constexpr const std::uint8_t OP_SEG_GS			= 0x65;
+constexpr std::uint8_t OP_LOCK				= 0xF0;
+constexpr std::uint8_t OP_REPNE				= 0xF2;
+constexpr std::uint8_t OP_REPE				= 0xF3;
+constexpr std::uint8_t OP_66				= 0x66;
+constexpr std::uint8_t OP_67				= 0x67;
+constexpr std::uint8_t OP_SEG_CS			= 0x2E;
+constexpr std::uint8_t OP_SEG_SS			= 0x36;
+constexpr std::uint8_t OP_SEG_DS			= 0x3E;
+constexpr std::uint8_t OP_SEG_ES			= 0x26;
+constexpr std::uint8_t OP_SEG_FS			= 0x64;
+constexpr std::uint8_t OP_SEG_GS			= 0x65;
 
 
 
@@ -1280,7 +1281,7 @@ disa_inst read(const std::uintptr_t address)
 	std::uint8_t* at = p.bytes;
 	std::uint8_t* prev_at = at;
 
-	for (int opcode_at = 0; opcode_at < disa_optable.size() - 1; at = prev_at, opcode_at++, p.flags = 0)
+	for (std::size_t opcode_at = 0; opcode_at < disa_optable.size() - 1; at = prev_at, opcode_at++, p.flags = 0)
 	{
 		const auto op_info = disa_optable[opcode_at];
 		std::uint8_t opcode_byte = std::strtol(op_info.code.substr(0, 2).c_str(), nullptr, 16);
@@ -1448,7 +1449,7 @@ disa_inst read(const std::uintptr_t address)
 			}
 
 			const std::uint8_t mod_byte_not_first = 255;
-			std::uint8_t prev = mod_byte_not_first;
+			auto prev = mod_byte_not_first;
 
 			// Iterate through all of the operands in this information bit
 			for (std::size_t c = 0; c < noperands; c++)
@@ -1461,7 +1462,7 @@ disa_inst read(const std::uintptr_t address)
 				// and then increases `at` by imm8 size.
 				const auto get_imm8 = [&p, &c, &at](auto x, bool constant)
 				{
-					char s_offset[8];
+					std::stringstream ss;
 
 					if (!constant)
 					{
@@ -1469,21 +1470,21 @@ disa_inst read(const std::uintptr_t address)
 						p.operands[c].flags |= OP_IMM8;
 
 						if (*x > CHAR_MAX)
+							ss << "-" << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << static_cast<uint32_t>(((UCHAR_MAX + 1) - p.operands[c].imm8));
+						else
 						{
-							sprintf_s(s_offset, "-%02X", (UCHAR_MAX + 1) - p.operands[c].imm8);
-						}
-						else {
-							sprintf_s(s_offset, "+%02X", p.operands[c].imm8);
+							ss << "+" << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << static_cast<uint32_t>(p.operands[c].imm8);
 						}
 					}
-					else {
+					else 
+					{
 						p.operands[c].disp8 = *x;
 						p.operands[c].flags |= OP_DISP8;
 
-						sprintf_s(s_offset, "%02X", p.operands[c].disp8);
+						ss << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << static_cast<uint32_t>(p.operands[c].disp8);
 					}
 
-					p.data += s_offset;
+					p.data += ss.str();
 
 					at += sizeof(std::uint8_t);
 				};
@@ -1492,7 +1493,7 @@ disa_inst read(const std::uintptr_t address)
 				// and then increases `at` by imm16 size.
 				const auto get_imm16 = [&p, &c, &at](auto x, bool constant)
 				{
-					char s_offset[8];
+					std::stringstream ss;
 
 					if (!constant)
 					{
@@ -1500,21 +1501,20 @@ disa_inst read(const std::uintptr_t address)
 						p.operands[c].flags |= OP_IMM16;
 
 						if (*x > INT16_MAX)
+							ss << "-" << std::setfill('0') << std::setw(4) << std::uppercase << std::hex << static_cast<uint32_t>(((UINT16_MAX + 1) - p.operands[c].imm16));
+						else 
 						{
-							sprintf_s(s_offset, "-%04X", (UINT16_MAX + 1) - p.operands[c].imm16);
-						}
-						else {
-							sprintf_s(s_offset, "+%04X", p.operands[c].imm16);
+							ss << "+" << std::setfill('0') << std::setw(4) << std::uppercase << std::hex << static_cast<uint32_t>(p.operands[c].imm16);
 						}
 					}
 					else {
 						p.operands[c].disp16 = *reinterpret_cast<std::uint16_t*>(x);
 						p.operands[c].flags |= OP_DISP16;
 
-						sprintf_s(s_offset, "%04X", p.operands[c].disp16);
+						ss << std::setfill('0') << std::setw(4) << std::uppercase << std::hex << static_cast<uint32_t>(p.operands[c].disp16);
 					}
 
-					p.data += s_offset;
+					p.data += ss.str();
 
 					at += sizeof(std::uint16_t);
 				};
@@ -1523,19 +1523,18 @@ disa_inst read(const std::uintptr_t address)
 				// and then increases `at` by imm32 size.
 				const auto get_imm32 = [&p, &c, &at](auto x, bool constant)
 				{
-					char s_offset[16];
+					std::stringstream ss;
 
 					if (!constant)
 					{
 						p.operands[c].imm32 = *reinterpret_cast<std::uint32_t*>(x);
 						p.operands[c].flags |= OP_IMM32;
 
-						if (p.operands[c].imm32 > INT_MAX)
+						if (*x > INT16_MAX)
+							ss << "-" << std::setfill('0') << std::setw(8) << std::uppercase << std::hex << ((UINT32_MAX + 1) - p.operands[c].imm32);
+						else
 						{
-							sprintf_s(s_offset, "-%08X", (UINT32_MAX + 1) - p.operands[c].imm32);
-						}
-						else {
-							sprintf_s(s_offset, "+%08X", p.operands[c].imm32);
+							ss << "+" << std::setfill('0') << std::setw(8) << std::uppercase << std::hex << p.operands[c].imm32;
 						}
 					}
 					else
@@ -1543,10 +1542,10 @@ disa_inst read(const std::uintptr_t address)
 						p.operands[c].disp32 = *reinterpret_cast<std::uint32_t*>(x);
 						p.operands[c].flags |= OP_DISP32;
 
-						sprintf_s(s_offset, "%08X", p.operands[c].disp32);
+						ss << std::setfill('0') << std::setw(8) << std::uppercase << std::hex << p.operands[c].disp32;
 					}
 
-					p.data += s_offset;
+					p.data += ss.str();
 
 					at += sizeof(std::uint32_t);
 				};
@@ -1592,11 +1591,10 @@ disa_inst read(const std::uintptr_t address)
 						{
 							p.operands[c].mul = multipliers[sib_byte / 64];
 
-							char s_multiplier[4];
-							sprintf_s(s_multiplier, "%i", p.operands[c].mul);
+							std::stringstream ss;
+							ss << "*" << p.operands[c].mul;
 
-							p.data += "*";
-							p.data += s_multiplier;
+							p.data += ss.str();
 						}
 					}
 
@@ -1614,17 +1612,16 @@ disa_inst read(const std::uintptr_t address)
 				// and then increases `at` by rel8 size.
 				const auto get_rel8 = [&p, &c, &at](auto x)
 				{
-					char s_offset[16];
-
 					// get the current address of where `at` is located
 					const std::uint32_t location = p.address + (reinterpret_cast<std::uint32_t>(x) - reinterpret_cast<std::uint32_t>(p.bytes));
 					
 					// base the 8-bit relative offset on it
 					p.operands[c].rel8 = *reinterpret_cast<std::uint8_t*>(x);
 
-					sprintf_s(s_offset, "%08X", (location + sizeof(std::uint8_t) + p.operands[c].rel8));
+					std::stringstream ss;
+					ss << std::setfill('0') << std::setw(8) << std::uppercase << std::hex << (location + sizeof(std::uint8_t) + p.operands[c].rel8);
 					
-					p.data += s_offset;
+					p.data += ss.str();
 
 					at += sizeof(std::uint8_t);
 				};
@@ -1633,17 +1630,16 @@ disa_inst read(const std::uintptr_t address)
 				// and then increases `at` by rel16 size.
 				const auto get_rel16 = [&p, &c, &at](auto x)
 				{
-					char s_offset[16];
-
 					// get the current address of where `at` is located
 					const std::uint32_t location = p.address + (reinterpret_cast<std::uint32_t>(x) - reinterpret_cast<std::uint32_t>(p.bytes));
 					
 					// base the 16-bit relative offset on it
 					p.operands[c].rel16 = *reinterpret_cast<std::uint16_t*>(x);
 
-					sprintf_s(s_offset, "%08X", (location + sizeof(std::uint16_t) + p.operands[c].rel16));
+					std::stringstream ss;
+					ss << std::setfill('0') << std::setw(8) << std::uppercase << std::hex << (location + sizeof(std::uint16_t) + p.operands[c].rel16);
 
-					p.data += s_offset;
+					p.data += ss.str();
 
 					at += sizeof(std::uint16_t);
 				};
@@ -1652,16 +1648,15 @@ disa_inst read(const std::uintptr_t address)
 				// and then increases `at` by rel32 size.
 				const auto get_rel32 = [&p, &c, &at](auto x)
 				{
-					char s_offset[16];
-
 					// get the current address of where `at` is located
 					const std::uint32_t location = p.address + (reinterpret_cast<std::uint32_t>(x) - reinterpret_cast<std::uint32_t>(p.bytes));
 					// base the 32-bit relative offset on it
 					p.operands[c].rel32 = *reinterpret_cast<std::uint32_t*>(x);
 
-					sprintf_s(s_offset, "%08X", (location + sizeof(std::uint32_t) + p.operands[c].rel32));
+					std::stringstream ss;
+					ss << std::setfill('0') << std::setw(8) << std::uppercase << std::hex << (location + sizeof(std::uint32_t) + p.operands[c].rel32);
 
-					p.data += s_offset;
+					p.data += ss.str();
 
 					at += sizeof(std::uint32_t);
 				};
@@ -1882,10 +1877,14 @@ disa_inst read(const std::uintptr_t address)
 							break;
 						case 5:
 						{
-							char s_disp[16];
-							sprintf_s(s_disp, "%08X", p.operands[c].disp32 = *reinterpret_cast<std::uint32_t*>(at + 1));
-							p.data += s_disp;
+							p.operands[c].disp32 = *reinterpret_cast<std::uint32_t*>(at + 1);
 							p.operands[c].flags |= OP_DISP32;
+
+							std::stringstream ss;
+							ss << std::setfill('0') << std::setw(8) << std::uppercase << std::hex << p.operands[c].disp32;
+
+							p.data += ss.str();
+
 							at += sizeof(std::uint32_t);
 							break;
 						}
