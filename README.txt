@@ -62,5 +62,6 @@ mov eax,[00A7120C]
 is called a "disp32".
 Unlike imm32, it is not an offset of a register but a direct memory address instead.
 
-Hopefully this is enough to graspthe basics of DISA.
+Hopefully this is enough to grasp the basics of DISA
+until I write up a real documentation
 
