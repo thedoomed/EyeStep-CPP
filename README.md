@@ -55,13 +55,13 @@ if (inst.flags & OP_SRC_DEST)
 }
 ```
 
-src() and dest() access the first and second operands of the instruction automatically.
+src() and dest() access the first and second operands of the instruction automatically.<br>
 and reg is a table containing the registers used in this part of the instruction.
 
 So in a 2-operand instruction, source is the first half, destination is the second half.
 
 ***
-Remember, registers are stored as a number which goes in this order:<br>
+And remember, registers are stored as a number which goes in this order:<br>
 
 0 - EAX <---<br>
 1 - ECX<br>
@@ -72,7 +72,7 @@ Remember, registers are stored as a number which goes in this order:<br>
 6 - ESI<br>
 7 - EDI<br>
 
-You can always use the enums for it, like R32_EBP or R32_EAX.
+To make it easy you can use the R32_EBP or R32_EAX enums and so on
 
 An operand that has [ebp+8] (or, [ebp+08]) will have an 'imm8' offset of 8.<br>
 An operand that has [ebp+0008] will have an 'imm16' offset of 8.<br>
