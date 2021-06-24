@@ -14,7 +14,8 @@ I plan to add support for x64 as well.
 
 # Usage
 
-To use DISA, simply call disa_load() once, to initialise the disassembler.
+To use DISA, simply call disa_load() once, to initialise the disassembler.<br>
+ALWAYS REMEMBER to do this before calling any other DISA functions.
 
 Take a look at the Examples folder for help on starting out with DISA.
 
