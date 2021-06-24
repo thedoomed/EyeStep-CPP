@@ -24,7 +24,7 @@ Let's assume the address 0xDEADBEEF contains this instruction:<br>
 `mov eax,[ebp+8];`
 
 First, we read it into a variable:<br>
-`const auto inst = disa_read(0xDEADBEEF); // store the instruction information into 'inst'`
+`const auto inst = disa_read(0xDEADBEEF); // 'inst' contains info about the instruction at this address`
 
 We can print the raw text translation of this instruction by doing:<br>
 `std::cout << inst.data << std::endl; // "mov eax,[ebp+08]"`
