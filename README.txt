@@ -63,9 +63,10 @@ An operand that has [ebp+00000008] will have an `imm32` offset of 8.
 
 Now, if it's a constant value in the case of:
 mov eax,[00A7120C]
-this is called a `disp32` value.
-Unlike imm32, it is not an offset of a register but a direct memory address instead.
+This is called a `disp32` value.
+You can grab this value by doing: inst.dest().disp32.
+Unlike imm32, it is not an offset of a register, but a direct memory address instead.
 
-Hopefully this is enough to grasp the basics of DISA
+Hopefully this is enough to grasp the basics of disassembling with DISA
 Until I write up a proper documentation
 
