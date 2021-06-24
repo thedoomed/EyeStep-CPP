@@ -78,6 +78,7 @@ This is called a 'disp32' value.<br>
 You can grab this value by doing: inst.dest().disp32.<br>
 Unlike imm32, it is not an offset of a register, but a direct memory address instead.<br>
 
+There are many other members of the operand class I'll try to explain more in-depth<br>
 Hopefully this is enough to grasp the basics of disassembling with DISA<br>
-Until I write up a proper documentation<br>
+Until I write up a full documentation<br>
 
