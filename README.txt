@@ -57,9 +57,9 @@ Remember, registers are stored as a number which goes in this order:
 7 - EDI
 
 
-An operand that has [ebp+8] (or, [ebp+08]) will have an `imm8` (8-bit) offset of 8.
-An operand that has [ebp+0008] will have an `imm16` (16-bit) offset of 8.
-An operand that has [ebp+00000008] will have an `imm32` (32-bit) offset of 8.
+An operand that has [ebp+8] (or, [ebp+08]) will have an `imm8` offset of 8. 
+An operand that has [ebp+0008] will have an `imm16` offset of 8.
+An operand that has [ebp+00000008] will have an `imm32` offset of 8.
 
 Now, if it's a constant value in the case of:
 mov eax,[00A7120C]
