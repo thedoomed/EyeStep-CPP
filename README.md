@@ -22,7 +22,7 @@ Here is a run-down of things:
 Let's assume the address 0xDEADBEEF contains this instruction:
 `mov eax,[ebp+8];`
 
-First, we read it into a variable:
+First, we read it into a variable:<br>
 `const auto inst = disa_read(0xDEADBEEF); // store the instruction information into 'inst'`
 
 We can print the raw text translation of this instruction by doing:
@@ -67,7 +67,7 @@ Remember, registers are stored as a number which goes in this order:
 7 - EDI
 ```
 
-An operand that has [ebp+8] (or, [ebp+08]) will have an 'imm8' offset of 8. 
+An operand that has [ebp+8] (or, [ebp+08]) will have an 'imm8' offset of 8.
 An operand that has [ebp+0008] will have an 'imm16' offset of 8.
 An operand that has [ebp+00000008] will have an 'imm32' offset of 8.
 
