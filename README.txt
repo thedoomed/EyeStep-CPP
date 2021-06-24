@@ -19,14 +19,15 @@ To use DISA, simply call disa_load() once, to initialise the disassembler.
 Take a look at the Examples folder for help on starting out with DISA.
 
 Here is a run-down of things:
+Let's assume the address 0xDEADBEEF contains this instruction:
+mov eax,[ebp+8];
+
+First, we read it into a variable:
 
 const auto inst = disa_read(0xDEADBEEF); // store the instruction information into `inst`
 
-now, let's assume 0xDEADBEEF contains this instruction:
-mov eax,[ebp+8];
-
-And let's say we're hoping to be able to identify eax, ebp, and 8, individually.
-First thing we would do is make sure it contains a SRC and DEST operand:
+Let's say, we're hoping to identify eax, ebp, and 8, programatically.
+The first thing we do is make sure it contains a source and destination operand:
 
 if (inst.flags & OP_SRC_DEST)
 {
@@ -34,34 +35,37 @@ if (inst.flags & OP_SRC_DEST)
 }
 
 
-Okay, now, we can go right ahead and read the values in src, and dest:
+Okay, now, we can go right ahead and read the values in src(first half/operand), and dest(second half/operand):
 
-std::cout << "first register used in source: " << inst.src().reg[0] << std::endl; // 0!!! ***
-std::cout << "first register used in destination: " << inst.dest().reg[0] << std::endl; // 5!!! ***
-std::cout << "8-bit offset used in destination: " << inst.dest().imm8 << std::endl; // 8!!!
+if (inst.flags & OP_SRC_DEST)
+{
+  std::cout << "first register used in source: " << inst.src().reg[0] << std::endl; // 0 ***
+  std::cout << "first register used in destination: " << inst.dest().reg[0] << std::endl; // 5 ***
+  std::cout << "8-bit offset used in destination: " << inst.dest().imm8 << std::endl; // 8
+}
 
 
 ***
-Remember, registers are indicated by a number which goes in this order:
-0 - EAX
+Remember, registers are stored as a number which goes in this order:
+0 - EAX <---
 1 - ECX
 2 - EDX
 3 - EBX
 4 - ESP
-5 - EBP
+5 - EBP <---
 6 - ESI
 7 - EDI
 
 
-An operand that has [ebp+8] (or, [ebp+08]) will have an imm8 offset.
-An operand that has [ebp+0008] will have an imm16 offset, and
-an operand that has [ebp+00000008] will have an imm32 offset.
+An operand that has [ebp+8] (or, [ebp+08]) will have an `imm8` (8-bit) offset of 8.
+An operand that has [ebp+0008] will have an `imm16` (16-bit) offset of 8.
+An operand that has [ebp+00000008] will have an `imm32` (32-bit) offset of 8.
 
-Now, a constant value in the case of:
+Now, if it's a constant value in the case of:
 mov eax,[00A7120C]
-is called a "disp32".
+this is called a `disp32` value.
 Unlike imm32, it is not an offset of a register but a direct memory address instead.
 
 Hopefully this is enough to grasp the basics of DISA
-until I write up a real documentation
+Until I write up a proper documentation
 
