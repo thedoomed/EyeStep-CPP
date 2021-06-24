@@ -26,7 +26,10 @@ First, we read it into a variable:
 
 const auto inst = disa_read(0xDEADBEEF); // store the instruction information into `inst`
 
-Let's say, we're hoping to identify eax, ebp, and 8, programatically.
+We can print the raw text translation of this instruction by doing:
+std::cout << inst.data << std::endl;
+
+Now let's say, we're hoping to identify eax, ebp, and 8, programatically.
 The first thing we do is make sure it contains a source and destination operand:
 
 if (inst.flags & OP_SRC_DEST)
@@ -42,6 +45,11 @@ if (inst.flags & OP_SRC_DEST)
   std::cout << "first register used in source: " << inst.src().reg[0] << std::endl; // 0 ***
   std::cout << "first register used in destination: " << inst.dest().reg[0] << std::endl; // 5 ***
   std::cout << "8-bit offset used in destination: " << inst.dest().imm8 << std::endl; // 8
+  
+  if (inst.dest().reg[0] == R32_EBP)
+  {
+    std::cout << "the destination operand uses EBP!" << std::endl;
+  }
 }
 
 
