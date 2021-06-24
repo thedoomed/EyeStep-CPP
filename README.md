@@ -29,8 +29,8 @@ First, we read it into a variable:<br>
 We can print the raw text translation of this instruction by doing:<br>
 `std::cout << inst.data << std::endl; // "mov eax,[ebp+08]"`
 
-Now let's say, we're hoping to identify eax, ebp, and 8, programatically.<br>
-The first thing we do is make sure it contains a source and destination operand:
+How can we use code to grab information like 'eax', 'ebp', or +8, programatically?<br>
+The first thing we would do is make sure it contains both a source and destination operand:
 ```
 if (inst.flags & OP_SRC_DEST)
 {
@@ -38,7 +38,7 @@ if (inst.flags & OP_SRC_DEST)
 }
 ```
 
-Okay, now, we can go right ahead and read the values in src(first half), and dest(second half):
+Okay, now, we can go right ahead and read the values in the source and destination like so:
 ```
 if (inst.flags & OP_SRC_DEST)
 {
@@ -55,6 +55,11 @@ if (inst.flags & OP_SRC_DEST)
 }
 ```
 
+src() and dest() access the first and second operands of the instruction automatically.
+and reg is a table containing the registers used in this part of the instruction.
+
+So in a 2-operand instruction, source is the first half, destination is the second half.
+
 ***
 Remember, registers are stored as a number which goes in this order:<br>
 
@@ -67,6 +72,7 @@ Remember, registers are stored as a number which goes in this order:<br>
 6 - ESI<br>
 7 - EDI<br>
 
+You can always use the enums for it, like R32_EBP or R32_EAX.
 
 An operand that has [ebp+8] (or, [ebp+08]) will have an 'imm8' offset of 8.<br>
 An operand that has [ebp+0008] will have an 'imm16' offset of 8.<br>
