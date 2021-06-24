@@ -46,6 +46,8 @@ if (inst.flags & OP_SRC_DEST)
   std::cout << "first register used in destination: " << inst.dest().reg[0] << std::endl; // 5 ***
   std::cout << "8-bit offset used in destination: " << inst.dest().imm8 << std::endl; // 8
   
+  std::cout << "The size of the instruction is: " << inst.len << " bytes!" << std::endl;
+  
   if (inst.dest().reg[0] == R32_EBP)
   {
     std::cout << "the destination operand uses EBP!" << std::endl;
