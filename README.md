@@ -72,7 +72,7 @@ And remember, registers are stored as a number which goes in this order:<br>
 6 - ESI<br>
 7 - EDI<br>
 
-To make it easy you can use the R32_EBP or R32_EAX enums and so on
+But to make it easy, you can use R32_EBP, R32_EAX, ... enums
 
 An operand that has [ebp+8] (or, [ebp+08]) will have an 'imm8' offset of 8.<br>
 An operand that has [ebp+0008] will have an 'imm16' offset of 8.<br>
