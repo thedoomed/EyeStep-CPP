@@ -27,7 +27,7 @@ First, we read it into a variable:
 const auto inst = disa_read(0xDEADBEEF); // store the instruction information into `inst`
 
 We can print the raw text translation of this instruction by doing:
-std::cout << inst.data << std::endl;
+std::cout << inst.data << std::endl; // "mov eax,[ebp+08]"
 
 Now let's say, we're hoping to identify eax, ebp, and 8, programatically.
 The first thing we do is make sure it contains a source and destination operand:
