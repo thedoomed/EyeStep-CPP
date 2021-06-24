@@ -13,6 +13,7 @@ int main()
 	SetConsoleTitleA("DISA Example");
 	disa_load();
 
+	// Read the first 8 instructions in our function `my_function`
 	for (const auto& i : disa_read(reinterpret_cast<std::uintptr_t>(&my_function), 8))
 	{
 		std::cout << i.data << std::endl;
