@@ -43,7 +43,7 @@ static std::vector<std::uint8_t> place_hook(const std::uintptr_t address_from, c
 		size += disa_read(address_from).front().len; // calculate number of nops
 	}
 
-	memcpy(old_bytes.data(), reinterpret_cast<void*>(address_from), size);
+	std::memcpy(old_bytes.data(), reinterpret_cast<void*>(address_from), size);
 
 
 	DWORD old;
@@ -74,13 +74,13 @@ static std::vector<std::uint8_t> place_trampoline(const std::uintptr_t address_f
 	}
 
 	// store the old bytes
-	memcpy(old_bytes.data(), reinterpret_cast<void*>(address_from), size);
+	std::memcpy(old_bytes.data(), reinterpret_cast<void*>(address_from), size);
 
 	if (copy_old_bytes)
 	{
 		// copy old bytes into the hook, so that they
 		// still get executed before it jumps back
-		memcpy(reinterpret_cast<void*>(location_jmpback), reinterpret_cast<void*>(address_from), size);
+		std::memcpy(reinterpret_cast<void*>(location_jmpback), reinterpret_cast<void*>(address_from), size);
 		location_jmpback += size;
 	}
 
@@ -262,7 +262,7 @@ void disa_detour::stop()
 		DWORD old;
 
 		VirtualProtect(reinterpret_cast<void*>(address), old_bytes.size(), PAGE_EXECUTE_READWRITE, &old);
-		memcpy(reinterpret_cast<void*>(address), old_bytes.data(), old_bytes.size());
+		std::memcpy(reinterpret_cast<void*>(address), old_bytes.data(), old_bytes.size());
 		VirtualProtect(reinterpret_cast<void*>(address), old_bytes.size(), old, &old);
 
 		VirtualFree(reinterpret_cast<void*>(current_hook), 0, MEM_RELEASE);
