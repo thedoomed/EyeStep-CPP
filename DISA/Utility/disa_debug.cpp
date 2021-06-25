@@ -1,13 +1,14 @@
 #include <Windows.h>
 #include <chrono>
 #include <thread>
-#include "disa_detours.hpp"
+#include "disa_debug.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
 
 
-disa_detour::disa_detour()
+disa_debug::disa_debug()
 {
+	address = 0;
 	dumpsize = 0;
 	maxhits = 1;
 	debug_reg32 = 0;
@@ -15,31 +16,42 @@ disa_detour::disa_detour()
 	timeout = 0;
 }
 
-disa_detour::~disa_detour()
+disa_debug::disa_debug(std::uintptr_t location)
+{
+	address = location;
+	disa_debug();
+}
+
+disa_debug::~disa_debug()
 {
 }
 
-void disa_detour::set_reg32(std::uint8_t reg32)
+void disa_debug::set_address(std::uintptr_t location)
+{
+	address = location;
+}
+
+void disa_debug::set_reg32(std::uint8_t reg32)
 {
 	debug_reg32 = reg32;
 }
 
-void disa_detour::set_reg_offset(std::uint32_t offset)
+void disa_debug::set_reg_offset(std::uint32_t offset)
 {
 	reg_offset = offset;
 }
 
-void disa_detour::set_dump_size(std::size_t count)
+void disa_debug::set_dump_size(std::size_t count)
 {
 	dumpsize = count;
 }
 
-void disa_detour::set_hit_count(std::size_t count)
+void disa_debug::set_hit_count(std::size_t count)
 {
 	maxhits = count;
 }
 
-void disa_detour::set_timeout(std::uint32_t ms)
+void disa_debug::set_timeout(std::uint32_t ms)
 {
 	timeout = ms;
 }
@@ -117,7 +129,7 @@ static std::vector<std::uint8_t> place_trampoline(const std::uintptr_t address_f
 	return old_bytes;
 }
 
-bool disa_detour::start(bool suspend)
+bool disa_debug::start(bool suspend)
 {
 	if (current_hook) return false;
 
@@ -128,6 +140,9 @@ bool disa_detour::start(bool suspend)
 	}
 
 	current_hook = reinterpret_cast<std::uintptr_t>(hook);
+
+	printf("Hook: %p\n", address);
+	printf("Detour: %p\n", current_hook);
 
 	std::size_t size = 0;
 
@@ -295,9 +310,9 @@ bool disa_detour::start(bool suspend)
 	return true;
 }
 
-void disa_detour::stop()
+void disa_debug::stop()
 {
-	result = detour_results();
+	result = disa_debug_results();
 
 	if (current_hook && address)
 	{
