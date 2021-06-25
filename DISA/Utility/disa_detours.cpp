@@ -1,12 +1,18 @@
 #include <Windows.h>
+#include <chrono>
+#include <thread>
 #include "disa_detours.hpp"
+
+using Clock = std::chrono::high_resolution_clock;
+
 
 disa_detour::disa_detour()
 {
 	dumpsize = 0;
 	maxhits = 1;
-	debug_reg32;
-	std::uint32_t reg_offset;
+	debug_reg32 = 0;
+	reg_offset = 0;
+	timeout = 0;
 }
 
 disa_detour::~disa_detour()
@@ -31,6 +37,11 @@ void disa_detour::set_dump_size(std::size_t count)
 void disa_detour::set_hit_count(std::size_t count)
 {
 	maxhits = count;
+}
+
+void disa_detour::set_timeout(std::uint32_t ms)
+{
+	timeout = ms;
 }
 
 static std::vector<std::uint8_t> place_hook(const std::uintptr_t address_from, const std::uintptr_t address_to)
@@ -229,13 +240,56 @@ bool disa_detour::start(bool suspend)
 	{
 		std::size_t hits = 0;
 
+		const auto tick_start = Clock::now();
+
 		while (hits < maxhits)
 		{
+			if (timeout)
+			{
+				const auto tick_present = Clock::now();
+				const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tick_present - tick_start).count();
+
+				if (ms >= timeout)
+				{
+					break;
+				}
+			}
+
 			hits = *reinterpret_cast<size_t*>(current_hook + 248);
 			Sleep(10);
 		}
 
 		stop();
+	}
+	else
+	{
+		// remove the hook after a specific period of time
+		// (MULTI-THREADED)
+		// 
+		if (timeout)
+		{
+			const auto wait_function = [this]()
+			{
+				const auto tick_start = Clock::now();
+
+				while (1)
+				{
+					const auto tick_present = Clock::now();
+					const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(tick_present - tick_start).count();
+
+					if (ms >= timeout)
+					{
+						break;
+					}
+
+					Sleep(10);
+				}
+
+				this->stop();
+			};
+
+			std::thread thread(wait_function);
+		}
 	}
 
 	return true;
