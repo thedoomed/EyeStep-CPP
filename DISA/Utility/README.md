@@ -32,7 +32,7 @@ Simply pass `false` as an arg to dbg.start, and it wont suspend the current thre
 It's up to you when you want to break it.
 Call dbg.stop() when you want to stop the debug, and then you can view the latest results.<br>
 
-This is useful if you want to run code that will invoke execution at the instruction.
+This is useful if you want to run a code that will invoke execution at the address.
 
 
 
