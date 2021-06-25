@@ -19,18 +19,18 @@ private:
 	std::uintptr_t current_hook;
 public:
 	disa_debug();
-	disa_debug(std::uintptr_t);
+	disa_debug(const std::uintptr_t);
 	~disa_debug();
 
 	std::uintptr_t address;
 	disa_debug_results result; // applies only to the specified register
 
-	void set_address(std::uintptr_t location);
-	void set_reg32(std::uint8_t reg32);
-	void set_reg_offset(std::uint32_t offset); // offset from the register to dump
-	void set_dump_size(std::size_t count); // total number of offsets to dump from the register
-	void set_hit_count(std::size_t count); // total number of times the hook can be used before returning (if suspend is set to true)
-	void set_timeout(std::uint32_t ms); // total number of times the hook can be used before returning (if suspend is set to true)
-	bool start(bool suspend = true);
-	void stop();
+	void set_address(const std::uintptr_t location);
+	void set_reg32(const std::uint8_t reg32);
+	void set_reg_offset(const std::uint32_t offset); // offset from the register to dump
+	void set_dump_size(const std::size_t count); // total number of offsets to dump from the register
+	void set_hit_count(const std::size_t count); // total number of times the hook can be used before returning (if suspend is set to true)
+	void set_timeout(const std::uint32_t ms); // total number of times the hook can be used before returning (if suspend is set to true)
+	bool start(const bool suspend = true);
+	void stop(void);
 };
