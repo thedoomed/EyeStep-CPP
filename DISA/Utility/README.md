@@ -14,9 +14,9 @@ dbg.start();
 // So if this is 3, it will dump [ebp+8], [ebp+C], [ebp+10], into 'dbg.result.reg_contents'
 ```
 
-The above example will wait until the instruction at 0x15E5AA0 is executed.
+The above example will wait until the instruction at 0x15E5AA0 is executed.<br>
 As soon as its executed, it will grab 1 offset from EBP, starting at 8.<br>
-So essentially, it reads whatever value is contained in [ebp+8], in the instruction located at 0x15E5AA0.<br>
+So it reads whatever value is contained in [ebp+8], when the instruction located at 0x15E5AA0 is executed.<br>
 Once the debug hits, it will return from dbg.start() and you can access the results.<br>
 
 To view the results:
@@ -29,7 +29,7 @@ This is the least of its capabilities.<br>
 Let's say you want to execute code while its waiting for the instruction to be executed.<br>
 
 Simply pass `false` as an arg to dbg.start, and it wont suspend the current thread or wait for results.
-It's up to you when you want to break it.
+It's up to you when you want to break it.<br>
 Call dbg.stop() when you want to stop the debug, and then you can view the latest results.<br>
 
 This is useful if you want to run a code that will invoke execution at the address.
