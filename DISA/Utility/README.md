@@ -25,6 +25,15 @@ std::cout << "Result: " << std::hex << dbg.result.reg_contents.front() << std::e
 std::cout << "EBP: " << std::hex << dbg.result.reg << std::endl;
 ```
 
+This is the least of its capabilities.<br>
+Let's say you want to execute code while its waiting for the address to be executed.<br>
+
+Simply pass `false` as an arg to dbg.start, and it wont suspend the current thread or wait for results.
+It's up to you now to do something.
+When you want to view the stop the debug and view the latest results, call dbg.stop().
+
+
+
 
 
 
