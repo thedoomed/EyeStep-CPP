@@ -30,7 +30,9 @@ Let's say you want to execute code while its waiting for the instruction to be e
 
 Simply pass `false` as an arg to dbg.start, and it wont suspend the current thread or wait for results.
 It's up to you when you want to break it.
-Call dbg.stop() when you want to stop the debug, and then you can view the latest results.
+Call dbg.stop() when you want to stop the debug, and then you can view the latest results.<br>
+
+This is useful if you want to run code that will invoke execution at the instruction.
 
 
 
