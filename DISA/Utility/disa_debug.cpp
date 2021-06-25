@@ -16,7 +16,7 @@ disa_debug::disa_debug()
 	timeout = 0;
 }
 
-disa_debug::disa_debug(std::uintptr_t location)
+disa_debug::disa_debug(const std::uintptr_t location)
 {
 	address = location;
 	disa_debug();
@@ -26,32 +26,32 @@ disa_debug::~disa_debug()
 {
 }
 
-void disa_debug::set_address(std::uintptr_t location)
+void disa_debug::set_address(const std::uintptr_t location)
 {
 	address = location;
 }
 
-void disa_debug::set_reg32(std::uint8_t reg32)
+void disa_debug::set_reg32(const std::uint8_t reg32)
 {
 	debug_reg32 = reg32;
 }
 
-void disa_debug::set_reg_offset(std::uint32_t offset)
+void disa_debug::set_reg_offset(const std::uint32_t offset)
 {
 	reg_offset = offset;
 }
 
-void disa_debug::set_dump_size(std::size_t count)
+void disa_debug::set_dump_size(const std::size_t count)
 {
 	dumpsize = count;
 }
 
-void disa_debug::set_hit_count(std::size_t count)
+void disa_debug::set_hit_count(const std::size_t count)
 {
 	maxhits = count;
 }
 
-void disa_debug::set_timeout(std::uint32_t ms)
+void disa_debug::set_timeout(const std::uint32_t ms)
 {
 	timeout = ms;
 }
@@ -129,7 +129,7 @@ static std::vector<std::uint8_t> place_trampoline(const std::uintptr_t address_f
 	return old_bytes;
 }
 
-bool disa_debug::start(bool suspend)
+bool disa_debug::start(const bool suspend)
 {
 	if (current_hook) return false;
 
@@ -310,7 +310,7 @@ bool disa_debug::start(bool suspend)
 	return true;
 }
 
-void disa_debug::stop()
+void disa_debug::stop(void)
 {
 	result = disa_debug_results();
 
