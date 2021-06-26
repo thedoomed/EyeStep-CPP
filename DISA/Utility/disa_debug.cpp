@@ -8,22 +8,13 @@ using Clock = std::chrono::high_resolution_clock;
 
 disa_debug::disa_debug()
 {
-	address = 0;
-	dumpsize = 0;
 	maxhits = 1;
-	debug_reg32 = 0;
-	reg_offset = 0;
-	timeout = 0;
 }
 
 disa_debug::disa_debug(const std::uintptr_t location)
 {
 	address = location;
-	dumpsize = 0;
 	maxhits = 1;
-	debug_reg32 = 0;
-	reg_offset = 0;
-	timeout = 0;
 }
 
 disa_debug::~disa_debug()
