@@ -14,7 +14,7 @@ private:
 	std::size_t dumpsize;
 	std::size_t maxhits;
 	std::uint8_t debug_reg32;
-	std::uint32_t reg_offset;
+	std::uint8_t reg_offset;
 	std::uint32_t timeout;
 	std::uintptr_t current_hook;
 public:
@@ -32,5 +32,5 @@ public:
 	void set_hit_count(const std::size_t count); // total number of times the hook can be used before returning (if suspend is set to true)
 	void set_timeout(const std::uint32_t ms); // total number of times the hook can be used before returning (if suspend is set to true)
 	bool start(const bool suspend = true);
-	void stop(void);
+	void stop();
 };
