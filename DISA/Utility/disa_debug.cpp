@@ -19,7 +19,11 @@ disa_debug::disa_debug()
 disa_debug::disa_debug(const std::uintptr_t location)
 {
 	address = location;
-	disa_debug();
+	dumpsize = 0;
+	maxhits = 1;
+	debug_reg32 = 0;
+	reg_offset = 0;
+	timeout = 0;
 }
 
 disa_debug::~disa_debug()
@@ -63,7 +67,7 @@ static std::vector<std::uint8_t> place_hook(const std::uintptr_t address_from, c
 	std::size_t size = 0;
 	while (size < 5)
 	{
-		size += disa_read(address_from).front().len; // calculate number of nops
+		size += disa_read(address_from + size).front().len; // calculate number of nops
 	}
 
 	std::memcpy(old_bytes.data(), reinterpret_cast<void*>(address_from), size);
@@ -86,18 +90,20 @@ static std::vector<std::uint8_t> place_hook(const std::uintptr_t address_from, c
 	return old_bytes;
 }
 
-static std::vector<std::uint8_t> place_trampoline(const std::uintptr_t address_from, const std::uintptr_t address_to, std::uintptr_t location_jmpback, bool copy_old_bytes = false)
+static std::vector<std::uint8_t> place_trampoline(const std::uintptr_t address_from, const std::uintptr_t address_to, std::uintptr_t location_jmpback, const bool copy_old_bytes = false)
 {
-	std::vector<std::uint8_t>old_bytes = {};
-
 	std::size_t size = 0;
+
 	while (size < 5)
 	{
-		size += disa_read(address_from).front().len; // calculate extra nops
+		size += disa_read(address_from + size).front().len;
 	}
 
+	std::vector<std::uint8_t>old_bytes;
+	old_bytes.resize(size);
+
 	// store the old bytes
-	std::memcpy(old_bytes.data(), reinterpret_cast<void*>(address_from), size);
+	std::memcpy(&old_bytes[0], reinterpret_cast<void*>(address_from), size);
 
 	if (copy_old_bytes)
 	{
@@ -109,7 +115,7 @@ static std::vector<std::uint8_t> place_trampoline(const std::uintptr_t address_f
 
 	// place the trampoline jmpback
 	*reinterpret_cast<std::uint8_t*>(location_jmpback) = 0xE9;
-	*reinterpret_cast<std::uint32_t*>(location_jmpback + 1) = (address_from - location_jmpback) - 5;
+	*reinterpret_cast<std::uint32_t*>(location_jmpback + 1) = (address_from - location_jmpback);
 
 	DWORD old;
 	VirtualProtect(reinterpret_cast<void*>(address_from), size, PAGE_EXECUTE_READWRITE, &old);
@@ -134,6 +140,7 @@ bool disa_debug::start(const bool suspend)
 	if (current_hook) return false;
 
 	const auto hook = reinterpret_cast<std::uint8_t*>(VirtualAlloc(nullptr, 256, MEM_COMMIT, PAGE_EXECUTE_READWRITE));
+
 	if (!hook)
 	{
 		return false;
@@ -141,15 +148,14 @@ bool disa_debug::start(const bool suspend)
 
 	current_hook = reinterpret_cast<std::uintptr_t>(hook);
 
-	printf("Hook: %p\n", address);
-	printf("Detour: %p\n", current_hook);
-
 	std::size_t size = 0;
 
 
 	const auto r1 = (debug_reg32 != R32_ESI) ? R32_ESI : R32_EAX;
 	const auto r2 = (debug_reg32 != R32_EDI) ? R32_EDI : R32_EAX;
 
+
+	hook[size++] = 0x60; // pushad
 	hook[size++] = 0x50 + r1; // push eax
 	hook[size++] = 0x50 + r2; // push edi
 
@@ -157,7 +163,7 @@ bool disa_debug::start(const bool suspend)
 	// 
 	hook[size++] = 0xB8 + r2; // mov edi, reg_offset
 
-	*reinterpret_cast<uint32_t*>(hook + size) = reg_offset;
+	*reinterpret_cast<uint32_t*>(hook + size) = 0;
 	size += sizeof(uint32_t);
 
 
@@ -215,10 +221,10 @@ bool disa_debug::start(const bool suspend)
 		hook[size++] = 0x8B; // mov eax,[debug_reg32+edi+00]
 		hook[size++] = 0x44 + (r1 * 8);
 		hook[size++] = 0x00 + (r2 * 8) + debug_reg32;
-		hook[size++] = 0x00;
+		hook[size++] = reg_offset;
 
 		hook[size++] = 0x89; // mov [edi+OUTPUT_LOCATION],eax
-		hook[size++] = 0x80 + r2;
+		hook[size++] = 0x80 + (r1 * 8) + r2;
 
 		*reinterpret_cast<std::uint8_t**>(hook + size) = hook + 256;
 		size += sizeof(std::uint8_t*);
@@ -248,16 +254,16 @@ bool disa_debug::start(const bool suspend)
 	//
 	hook[size++] = 0x58 + r2; // pop edi
 	hook[size++] = 0x58 + r1; // pop eax
+	hook[size++] = 0x61; // popad
+
 
 	old_bytes = place_trampoline(address, current_hook, current_hook + size, true);
 
 	if (suspend)
 	{
-		std::size_t hits = 0;
-
 		const auto tick_start = Clock::now();
 
-		while (hits < maxhits)
+		while (*reinterpret_cast<size_t*>(current_hook + 248) < maxhits)
 		{
 			if (timeout)
 			{
@@ -270,7 +276,6 @@ bool disa_debug::start(const bool suspend)
 				}
 			}
 
-			hits = *reinterpret_cast<size_t*>(current_hook + 248);
 			Sleep(10);
 		}
 
