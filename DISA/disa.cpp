@@ -1050,7 +1050,13 @@ disa_operand::disa_operand()
 	opmode = 0;
 	flags = 0;
 
-	reg = std::vector<std::uint8_t>(4);
+	reg = std::vector<std::uint8_t>();
+	reg.resize(4);
+
+	reg[0] = 0;
+	reg[1] = 0;
+	reg[2] = 0;
+	reg[3] = 0;
 }
 
 disa_operand::~disa_operand()
@@ -1068,7 +1074,13 @@ disa_inst::disa_inst()
 	data[0] = '\0';
 	info = disa_opinfo();
 
-	operands = std::vector<disa_operand>(4);
+	operands = std::vector<disa_operand>();
+	operands.resize(4);
+
+	operands[0] = disa_operand();
+	operands[1] = disa_operand();
+	operands[2] = disa_operand();
+	operands[3] = disa_operand();
 
 	address = 0;
 	flags = 0;
@@ -1273,7 +1285,7 @@ constexpr std::uint8_t OP_SEG_GS			= 0x65;
 
 disa_inst read(const std::uintptr_t address)
 {
-	disa_inst p;
+	disa_inst p = disa_inst();
 	p.address = address;
 
 	std::memcpy(&p.bytes, reinterpret_cast<void*>(address), sizeof(p.bytes) / sizeof(std::uint8_t));
@@ -1604,7 +1616,7 @@ disa_inst read(const std::uintptr_t address)
 					}
 					else if (imm == sizeof(std::uint32_t) || (imm == 0 && r2 == 5))
 					{
-						get_imm32(at + 1, false);
+						get_imm32(at + 1, true);
 					}
 				};
 
@@ -1983,10 +1995,15 @@ disa_inst read(const std::uintptr_t address)
 	return p;
 }
 
+disa_inst disa_read(const std::uintptr_t address)
+{
+	return read(address);
+}
+
 std::vector<disa_inst> disa_read(const std::uintptr_t address, const std::size_t count)
 {
 	std::uintptr_t at = address;
-	std::vector<disa_inst> inst_list = { };
+	std::vector<disa_inst> inst_list;
 
 	for (std::size_t c = 0; c < count; c++)
 	{
